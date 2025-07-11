@@ -1,0 +1,7 @@
+project_id = "kbjmoxzhjmxcttwupjmh"
+
+[functions.generate-onlyoffice-config]
+verify_jwt = true
+
+[functions.save-document-callback]
+verify_jwt = false
