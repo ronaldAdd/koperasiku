@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { post } from "@/lib/api/api";
+import { createNewOnlyOfficeFile } from "@/lib/api/files";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,25 +23,29 @@ import { Save } from "lucide-react";
 export default function OnlyOfficeFileCreate() {
   const [title, setTitle] = useState("Dokumen Baru");
   const [extension, setExtension] = useState("docx");
+  const [templateId, setTemplateId] = useState<string>(""); // 🔹 Tambahkan state templateId
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const folderId = "1323682"; // Ganti dengan folder ID yang valid
+  const folderId = "1323682";
 
   const createNewFile = async () => {
     setLoading(true);
     try {
-      const response = await post(`/api/2.0/files/${folderId}/file`, {
-        title: `${title}.${extension}`,
-        content: "ini adalah tutorial",
-      });
+      const numericTemplateId = templateId ? parseInt(templateId, 10) : undefined;
+
+      const response = await createNewOnlyOfficeFile(
+        folderId,
+        `${title}.${extension}`,
+        "ini adalah tutorial",
+        numericTemplateId // 🔹 Kirim jika ada
+      );
 
       const fileId = response?.response?.id;
       setResult(response);
 
       if (fileId) {
-        // Redirect ke halaman edit
         navigate(`/documents/${fileId}`);
       } else {
         console.warn("ID file tidak ditemukan di response.");
@@ -61,7 +65,7 @@ export default function OnlyOfficeFileCreate() {
           <CardHeader>
             <CardTitle>Buat File OnlyOffice</CardTitle>
             <CardDescription>
-              Masukkan nama file lalu pilih ekstensi dokumen.
+              Masukkan nama file, ekstensi, dan template (opsional).
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -91,6 +95,17 @@ export default function OnlyOfficeFileCreate() {
               </Select>
             </div>
 
+            <div className="space-y-2">
+              <Label htmlFor="template">Template (Opsional)</Label>
+              <Input
+                id="template"
+                type="number"
+                placeholder="Misal: 1937067"
+                value={templateId}
+                onChange={(e) => setTemplateId(e.target.value)}
+              />
+            </div>
+
             <Button onClick={createNewFile} disabled={!title || loading}>
               <Save className="h-4 w-4 mr-2" />
               {loading ? "Membuat..." : "Buat Dokumen"}
@@ -102,7 +117,9 @@ export default function OnlyOfficeFileCreate() {
           <Card>
             <CardHeader>
               <CardTitle>File Berhasil Dibuat</CardTitle>
-              <CardDescription>ID File: {result.response.file.id}</CardDescription>
+              <CardDescription>
+                ID File: {result.response.file.id}
+              </CardDescription>
             </CardHeader>
           </Card>
         )}

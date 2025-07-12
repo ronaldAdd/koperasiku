@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { post } from "@/lib/api/api";
+import { loginOnlyOffice } from "@/lib/api/auth";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,22 +26,12 @@ export default function TokenCreate() {
     setLoading(true);
     setErrorMsg("");
     try {
-      const response = await post("/api/2.0/authentication", {
-        userName,
-        password,
-      });
-
-      const resultToken = response?.response?.token;
-      if (resultToken) {
-        setToken(resultToken);
-        // contoh simpan token ke localStorage
-        localStorage.setItem("onlyoffice_token", resultToken);
-      } else {
-        setErrorMsg("Token tidak ditemukan di response.");
-      }
-    } catch (error) {
+      const resultToken = await loginOnlyOffice(userName, password);
+      setToken(resultToken);
+      localStorage.setItem("onlyoffice_token", resultToken); // Simpan token
+    } catch (error: any) {
       console.error("Login gagal:", error);
-      setErrorMsg("Gagal login. Cek username/password.");
+      setErrorMsg(error.message || "Gagal login. Cek username/password.");
     } finally {
       setLoading(false);
     }

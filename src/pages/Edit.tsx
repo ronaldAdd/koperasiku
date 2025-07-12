@@ -1,36 +1,31 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { get } from "@/lib/api/api";
+import { getFileEditConfig } from "@/lib/api/files/edit";
 import SDK from "@onlyoffice/docspace-sdk-js";
 
-const EditDocument = () => {
+export default function EditDocument() {
   const { fileId } = useParams();
-
   const [token, setToken] = useState<string | null>(null);
   const [webUrl, setWebUrl] = useState<string | null>(null);
   const [documentId, setDocumentId] = useState<number | null>(null);
 
-  // Ambil data dari API
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchEditConfig = async () => {
       try {
-        const response = await get(`/api/2.0/files/file/${fileId}/openedit`);
-        const conf = response?.response;
+        if (!fileId) return;
 
-        setToken(response?.response.token || null);
-        setWebUrl(conf?.file?.webUrl || null);
-        setDocumentId(conf?.file?.id || null);
-        console.log(token,webUrl,documentId,'conf');
-        
+        const { token, webUrl, documentId } = await getFileEditConfig(fileId);
+        setToken(token);
+        setWebUrl(webUrl);
+        setDocumentId(documentId);
       } catch (err) {
-        console.error("Gagal ambil data:", err);
+        console.error("Gagal ambil data edit file:", err);
       }
     };
 
-    if (fileId) fetchData();
+    fetchEditConfig();
   }, [fileId]);
 
-  // Init OnlyOffice setelah state siap
   useEffect(() => {
     if (token && webUrl && documentId) {
       const container = document.getElementById("ds-frame");
@@ -38,7 +33,7 @@ const EditDocument = () => {
 
       const sdk = new SDK();
       sdk.init({
-        src: "https://sschouse2507030347.onlyoffice.com",
+        src: "https://sschouse2507030347.onlyoffice.com", // Ganti dengan domain OnlyOffice kamu
         mode: "editor",
         width: "100%",
         height: "100%",
@@ -50,28 +45,25 @@ const EditDocument = () => {
     }
   }, [token, webUrl, documentId]);
 
-return (
-  <div
-    id="onlyoffice-container"
-    style={{
-      margin: 0,
-      padding: 0,
-      width: "100vw",
-      height: "100vh",
-      overflow: "hidden",
-    }}
-  >
+  return (
     <div
-      id="ds-frame"
+      id="onlyoffice-container"
       style={{
-        width: "100%",
-        height: "100%",
-        border: "none",
+        margin: 0,
+        padding: 0,
+        width: "100vw",
+        height: "100vh",
+        overflow: "hidden",
       }}
-    />
-  </div>
-);
-
-};
-
-export default EditDocument;
+    >
+      <div
+        id="ds-frame"
+        style={{
+          width: "100%",
+          height: "100%",
+          border: "none",
+        }}
+      />
+    </div>
+  );
+}
