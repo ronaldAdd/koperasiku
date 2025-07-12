@@ -28,7 +28,7 @@ export default function OnlyOfficeFileCreate() {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
-  const folderId = "1323682";
+  const folderId = "1325204";
 
   const createNewFile = async () => {
     setLoading(true);
