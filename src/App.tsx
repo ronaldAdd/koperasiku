@@ -13,6 +13,7 @@ import DocumentDetail from "./pages/Edit";
 import DocumentCreate from "./pages/DocumentCreate";
 import NotFound from "./pages/NotFound";
 import TokenCreate from "./pages/TokenCreate";
+import AuthOnlyOffice from "./pages/Auth-onlyoffice";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
           <Route path="/documents/create" element={<New />} />
           <Route path="/settings/create-token" element={<TokenCreate />} />
           <Route path="/documents/:fileId" element={<DocumentDetail />} />
+          <Route path="/auth-onlyoffice" element={<AuthOnlyOffice />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

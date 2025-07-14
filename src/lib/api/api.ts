@@ -1,10 +1,15 @@
 const BASE_URL = import.meta.env.VITE_ONLYOFFICE_API_URL;
-const TOKEN = import.meta.env.VITE_ONLYOFFICE_TOKEN;
+// const TOKEN = import.meta.env.VITE_ONLYOFFICE_TOKEN;
+
+function getToken(): string | null {
+  return localStorage.getItem("onlyoffice_token");
+}
 
 function getHeaders(): HeadersInit {
+  const token = getToken();
   return {
     "Content-Type": "application/json",
-    Authorization: `Bearer ${TOKEN}`,
+    Authorization: `Bearer ${token}`,
   };
 }
 
